@@ -17,6 +17,7 @@
 	</modules>
 
 	<properties>
+		<skip.it>true</skip.it>
 		<app.name>weather</app.name>
 		<app.version>1.0-SNAPSHOT</app.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -72,9 +73,6 @@
 			<version>27.1-jre</version>
 			<scope>test</scope>
 		</dependency>
-
-
-
 	</dependencies>
 	</dependencyManagement>
 

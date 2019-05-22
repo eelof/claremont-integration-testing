@@ -35,20 +35,24 @@ public class WeatherService {
     public String transformWeatherJsonToPrettyResponse(String jsonString, String city) {
         JsonNode json = weatherStringToJson(jsonString);
         double temp = kelvinToCelsius(json.path("main").path("temp").doubleValue());
+        String weather = json.path("weather").get(0).path("main").asText();
 
         return "Det är "
-                + transformWeatherDescriptionToSwedishAdjective(json.path("weather").get(0).path("main").asText())
-                + " " + temp + " grader varmt i " + city;
+                + weatherToAdjective(weather) + temp + " grader varmt i " + city + ". " + tempToReaction(temp);
     }
 
-    private String transformWeatherDescriptionToSwedishAdjective(String weatherDescription) {
+    private String weatherToAdjective(String weatherDescription) {
         switch (weatherDescription) {
-            case "Rain": return "regnigt och";
-            case "Snow": return "snöigt och";
-            case "Drizzle": return "duggigt och";
-            case "Clear": return "soligt och";
+            case "Rain": return "regnigt och ";
+            case "Clouds": return "molnigt och ";
+            case "Drizzle": return "duggigt och ";
+            case "Clear": return "soligt och ";
             default: return "";
         }
+    }
+
+    private String tempToReaction(double temp) {
+        return temp > 15 ? "Härligt!" : "Kyligt!";
     }
 
     private double kelvinToCelsius(double kelvin) {

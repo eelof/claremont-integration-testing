@@ -4,8 +4,6 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import org.junit.Test;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.model.HttpRequest;
-import org.mockserver.model.HttpResponse;
 
 import java.io.IOException;
 
@@ -14,7 +12,6 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
 public class WeatherIT {
-
 
     MockServerClient mockServerClient = new MockServerClient("localhost", 1080);
 
@@ -26,7 +23,7 @@ public class WeatherIT {
                     .withPath("/data/2.5/weather"))
                 .respond(
                         response()
-                        .withBody(getResourceContents("openweather-responses/weather_stockholm.json"))
+                        .withBody(getResourceContents("openweather-responses/weather_stockholm_clear_19.json"))
                 );
 
         given()

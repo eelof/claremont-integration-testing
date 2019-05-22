@@ -2,8 +2,6 @@ package se.claremont.tutorial.weather.app.service;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class WeatherServiceTest {
 
     private WeatherService weatherService = new WeatherService("");
