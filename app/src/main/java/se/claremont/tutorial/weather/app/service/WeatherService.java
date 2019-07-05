@@ -1,5 +1,6 @@
 package se.claremont.tutorial.weather.app.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,34 +9,57 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import se.claremont.tutorial.weather.app.error.InvalidCountryException;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 @Component
 public class WeatherService {
 
     RestTemplate restTemplate;
-
+    ObjectMapper objectMapper;
+    Map<String, String> countries;
 
     @Autowired
     public WeatherService(@Value("${api.url:http://api.openweathermap.org}") String apiUrl) {
         restTemplate = new RestTemplate();
         restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(apiUrl));
+        objectMapper = new ObjectMapper();
+
+        countries = new HashMap<String, String>();
+        for(Locale loc : Locale.getAvailableLocales()) {
+            countries.put(loc.getDisplayCountry(), loc.getCountry());
+        }
     }
 
-    public String getWeather(String country, String city) {
-        ResponseEntity<String> response =
-                restTemplate.getForEntity("/data/2.5/weather?q="+city+","+country+"&appid=8363b5cad8db680617e9f9f57434a47f", String.class);
+    public ResponseEntity getWeather(String country, String city) {
+        if(!countries.containsKey(country) && !countries.containsValue(country)) throw new InvalidCountryException(country);
 
-        return transformWeatherJsonToPrettyResponse(response.getBody(), city);
+        String url = "/data/2.5/weather?q="+city+","+country+"&appid=8363b5cad8db680617e9f9f57434a47f";
+
+        ResponseEntity<JsonNode> response = restTemplate.getForEntity(url, JsonNode.class);
+
+        System.out.println(url);
+        try {
+            System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(response));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.ok(transformWeatherJsonToPrettyResponse(response.getBody()));
     }
 
-    public String transformWeatherJsonToPrettyResponse(String jsonString, String city) {
-        JsonNode json = weatherStringToJson(jsonString);
+    public String transformWeatherJsonToPrettyResponse(JsonNode json) {
+        //JsonNode json = weatherStringToJson(jsonString);
         double temp = kelvinToCelsius(json.path("main").path("temp").doubleValue());
         String weather = json.path("weather").get(0).path("main").asText();
+        String city = json.get("name").asText();
+
 
         return "Det är "
                 + weatherToAdjective(weather) + temp + " grader varmt i " + city + ". " + tempToReaction(temp);
@@ -58,17 +82,4 @@ public class WeatherService {
     private double kelvinToCelsius(double kelvin) {
         return BigDecimal.valueOf(kelvin-273.15).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
-
-    private JsonNode weatherStringToJson(String jsonString) {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = null;
-        try {
-            root = mapper.readTree(jsonString);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return root;
-    }
-
 }
