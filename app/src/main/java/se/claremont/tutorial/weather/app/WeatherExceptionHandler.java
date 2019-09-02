@@ -23,6 +23,6 @@ public class WeatherExceptionHandler {
 
     @ExceptionHandler({InvalidCountryException.class})
     public ResponseEntity handleInvalidCOuntryException(InvalidCountryException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getCountry() + " är inte ett giltigt namn!");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getCountry() + " är inte ett giltigt landsnamn!");
     }
 }

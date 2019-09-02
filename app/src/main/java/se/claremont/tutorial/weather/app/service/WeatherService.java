@@ -55,7 +55,6 @@ public class WeatherService {
     }
 
     public String transformWeatherJsonToPrettyResponse(JsonNode json) {
-        //JsonNode json = weatherStringToJson(jsonString);
         double temp = kelvinToCelsius(json.path("main").path("temp").doubleValue());
         String weather = json.path("weather").get(0).path("main").asText();
         String city = json.get("name").asText();
