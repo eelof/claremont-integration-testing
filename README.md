@@ -4,7 +4,7 @@ This is an example application to illustrate integration testing using MockServe
 ## Running the application
 
 To run the application:
-```
+```shell
 mvn clean install && java -jar app/target/app-1.0-SNAPSHOT.jar
 ```
 
