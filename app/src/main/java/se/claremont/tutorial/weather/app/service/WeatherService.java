@@ -11,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import se.claremont.tutorial.weather.app.error.InvalidCountryException;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
@@ -43,13 +42,6 @@ public class WeatherService {
         String url = "/data/2.5/weather?q="+city+","+country+"&appid=8363b5cad8db680617e9f9f57434a47f";
 
         ResponseEntity<JsonNode> response = restTemplate.getForEntity(url, JsonNode.class);
-
-        System.out.println(url);
-        try {
-            System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(response));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
 
         return ResponseEntity.ok(transformWeatherJsonToPrettyResponse(response.getBody()));
     }
